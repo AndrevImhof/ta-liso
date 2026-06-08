@@ -84,18 +84,23 @@ export default function BottomNav({ active, onChange, onAdd }) {
             ))}
           </div>
 
-          {/* FAB central elevado */}
-          <motion.button
-            type="button"
-            onClick={onAdd}
-            aria-label="Adicionar transação"
-            whileTap={reduced ? undefined : { scale: 0.9 }}
-            whileHover={reduced ? undefined : { scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 480, damping: 24 }}
-            className="absolute left-1/2 top-0 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-gradient-to-br from-accent to-accent-2 text-white shadow-fab outline-none ring-4 ring-bg focus-visible:ring-4 focus-visible:ring-accent"
-          >
-            <Plus size={30} strokeWidth={2.8} aria-hidden="true" />
-          </motion.button>
+          {/* FAB central elevado.
+             O wrapper cuida do POSICIONAMENTO (translate estático), e o
+             motion.button anima só a escala — assim o Framer Motion não
+             sobrescreve os translates ao animar transform no hover/tap. */}
+          <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2">
+            <motion.button
+              type="button"
+              onClick={onAdd}
+              aria-label="Adicionar transação"
+              whileTap={reduced ? undefined : { scale: 0.9 }}
+              whileHover={reduced ? undefined : { scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 480, damping: 24 }}
+              className="pointer-events-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-accent to-accent-2 text-white shadow-fab outline-none ring-4 ring-bg focus-visible:ring-4 focus-visible:ring-accent"
+            >
+              <Plus size={30} strokeWidth={2.8} aria-hidden="true" />
+            </motion.button>
+          </div>
         </div>
       </div>
     </nav>
