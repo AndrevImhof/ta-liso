@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
 import App from "./App.jsx";
 import "./index.css";
+// Registra cedo os listeners de instalação (beforeinstallprompt/appinstalled).
+import "./lib/pwaInstall.js";
 
 // Atualização automática do service worker (sem prompt ao usuário).
 registerSW({ immediate: true });

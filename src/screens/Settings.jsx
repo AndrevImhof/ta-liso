@@ -31,6 +31,7 @@ import SectionHeader from "../components/SectionHeader";
 import Chip from "../components/Chip";
 import Sheet from "../components/Sheet";
 import ConfirmDialog from "../components/ConfirmDialog";
+import InstallCard from "../components/InstallCard.jsx";
 
 const APP_VERSION = "1.0.0";
 
@@ -583,6 +584,9 @@ export default function Settings() {
           </button>
         </div>
       </Card>
+
+      {/* ---------- Instalar o app ---------- */}
+      <InstallCard />
 
       {/* ---------- Categorias ---------- */}
       <Card className="mt-3">

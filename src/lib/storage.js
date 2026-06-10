@@ -12,6 +12,7 @@ export const DEFAULT_STATE = {
     monthlyIncome: 0,
     sarcasmLevel: "medio", // "leve" | "medio" | "brutal"
     theme: "dark", // "dark" | "light"
+    installHintDismissed: false, // usuário dispensou o convite de instalar
   },
   transactions: [], // { id, type, amount, categoryId, description, date, recurringId }
   categories: [], // preenchido no onboarding via seed
@@ -59,6 +60,9 @@ function migrate(raw) {
     next.settings.userName =
       typeof next.settings.userName === "string" ? next.settings.userName : "";
     next.settings.monthlyIncome = Number(next.settings.monthlyIncome) || 0;
+    next.settings.installHintDismissed = Boolean(
+      next.settings.installHintDismissed
+    );
   }
 
   if (Array.isArray(raw.transactions)) next.transactions = raw.transactions;

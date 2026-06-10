@@ -24,6 +24,7 @@ import Settings from "./screens/Settings.jsx";
 import AddTransaction from "./screens/AddTransaction.jsx";
 
 import BottomNav from "./components/BottomNav.jsx";
+import InstallBanner from "./components/InstallBanner.jsx";
 
 const TAB_ORDER = ["inicio", "relatorios", "metas", "ajustes"];
 
@@ -147,6 +148,9 @@ export default function App() {
 
   return (
     <div className="relative mx-auto min-h-screen w-full max-w-[460px] bg-bg text-ink">
+      {/* Convite a instalar o app (iOS/Android) — some quando instalado/dispensado. */}
+      <InstallBanner />
+
       {/* Conteúdo rolável das telas (espaço inferior para a BottomNav). */}
       <main className="min-h-screen pb-28">
         <AnimatePresence mode="wait" initial={false}>
