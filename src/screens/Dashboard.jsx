@@ -71,11 +71,12 @@ export default function Dashboard({ onSeeAll, onAdd }) {
 
   // Saudação: sorteada uma vez por nível/horário/nome para não "piscar" a cada render.
   const hora = horaDoDia();
-  const saudacao = useMemo(
-    () => getMessage("saudacao", { state, level, nome, hora }),
+  const saudacao = useMemo(() => {
+    // De vez em quando o Sr. Cofre troca a saudação por uma cutucada na própria cara feia.
+    const trig = Math.random() < 0.35 ? "autozoeira" : "saudacao";
+    return getMessage(trig, { state, level, nome, hora });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [level, nome, hora]
-  );
+  }, [level, nome, hora]);
 
   // Comentário sobre a faixa de saldo global (mesmo número exibido no card).
   const comentarioSaldo = useMemo(() => {

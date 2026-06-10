@@ -1,12 +1,14 @@
 // Gera os ícones PWA em /public a partir de SVG de formas vetoriais puras
 // (sem emoji, sem texto) para renderizar igual em qualquer máquina.
+// Estilo "Flat Fintech" — o mesmo do componente Mascote.jsx (corpo squircle,
+// fenda de moeda roxa da marca, focinho elevado).
 //
 //   node scripts/gen-icons.mjs
 //
 // Saídas:
 //   public/icon-192.png
 //   public/icon-512.png
-//   public/icon-maskable-512.png  (~20% de padding de segurança)
+//   public/icon-maskable-512.png  (~22% de padding de segurança)
 //   public/apple-touch-icon.png   (180x180)
 
 import { fileURLToPath } from "node:url";
@@ -18,53 +20,32 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PUBLIC_DIR = resolve(__dirname, "..", "public");
 
-// Desenha o Sr. Cofre (porquinho-cofre) numa viewBox 0..size.
+// Sr. Cofre desenhado em espaço 120x120 (mesma geometria do Mascote.jsx,
+// humor "feliz" com moedinha). Reaproveitado em todos os ícones via transform.
+const PIGGY_120 = `
+  <path d="M30 34 L34 20 L47 31 Z" fill="#F0578F"/>
+  <path d="M90 34 L86 20 L73 31 Z" fill="#F0578F"/>
+  <rect x="22" y="28" width="76" height="68" rx="28" fill="url(#bodyGrad)"/>
+  <rect x="48" y="41" width="24" height="4.5" rx="2.25" fill="#7C5CFF"/>
+  <rect x="49" y="66" width="22" height="12" rx="6" fill="#FF8FB3"/>
+  <circle cx="55.5" cy="72" r="1.7" fill="#C9577E"/>
+  <circle cx="64.5" cy="72" r="1.7" fill="#C9577E"/>
+  <path d="M44 55 q4 -5 8 0" fill="none" stroke="#2A1722" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M68 55 q4 -5 8 0" fill="none" stroke="#2A1722" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M52 85 q8 6 16 0" fill="none" stroke="#2A1722" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="60" cy="30" r="5" fill="url(#coinGrad)" stroke="#C98A00" stroke-width="1.2"/>
+`;
+
 // `scale` (0..1) controla o tamanho do porquinho dentro do quadro,
 // permitindo a margem de segurança da versão maskable.
 function piggySvg(size, { rounded = true, scale = 1 } = {}) {
   const s = size;
   const r = Math.round(s * 0.22); // raio do fundo arredondado
-  const cx = s / 2;
-  const cy = s / 2;
 
-  // Dimensões do corpo proporcionais ao quadro e ao scale.
-  const bodyRx = s * 0.30 * scale;
-  const bodyRy = s * 0.225 * scale;
-  const bodyCy = cy + s * 0.02;
-
-  const snoutRx = s * 0.11 * scale;
-  const snoutRy = s * 0.085 * scale;
-  const snoutCx = cx + bodyRx * 0.72;
-  const snoutCy = bodyCy + s * 0.01;
-
-  const nostrilR = s * 0.018 * scale;
-
-  const earW = s * 0.12 * scale;
-  const earH = s * 0.14 * scale;
-  const earCx = cx + bodyRx * 0.30;
-  const earTopY = bodyCy - bodyRy * 0.95;
-
-  const eyeR = s * 0.026 * scale;
-  const eyeCx = cx + bodyRx * 0.36;
-  const eyeCy = bodyCy - bodyRy * 0.20;
-
-  // Fenda de moeda no topo do corpo.
-  const slotW = s * 0.16 * scale;
-  const slotH = s * 0.028 * scale;
-  const slotX = cx - slotW / 2 - bodyRx * 0.10;
-  const slotY = bodyCy - bodyRy * 0.78;
-  const slotR = slotH / 2;
-
-  // Perninhas.
-  const legW = s * 0.055 * scale;
-  const legH = s * 0.07 * scale;
-  const legY = bodyCy + bodyRy * 0.72;
-  const legGap = bodyRx * 0.55;
-
-  // Moeda/brilho (coin) acima da fenda.
-  const coinR = s * 0.075 * scale;
-  const coinCx = cx - bodyRx * 0.28;
-  const coinCy = bodyCy - bodyRy * 1.15;
+  // Porquinho (120-space) escalado e centralizado no quadro.
+  const ps = (s / 120) * scale;
+  const tx = s / 2 - 60 * ps;
+  const ty = s / 2 - 62 * ps;
 
   const bgRectAttrs = rounded
     ? `x="0" y="0" width="${s}" height="${s}" rx="${r}" ry="${r}"`
@@ -95,35 +76,9 @@ function piggySvg(size, { rounded = true, scale = 1 } = {}) {
   <rect ${bgRectAttrs} fill="url(#bgGrad)"/>
   <rect ${bgRectAttrs} fill="url(#glow)"/>
 
-  <!-- moeda / brilho -->
-  <circle cx="${coinCx}" cy="${coinCy}" r="${coinR}" fill="url(#coinGrad)" stroke="#C98A00" stroke-width="${s * 0.006}"/>
-  <circle cx="${coinCx}" cy="${coinCy}" r="${coinR * 0.55}" fill="none" stroke="#C98A00" stroke-width="${s * 0.006}" opacity="0.8"/>
-  <rect x="${coinCx - s * 0.012}" y="${coinCy - coinR * 0.45}" width="${s * 0.024}" height="${coinR * 0.9}" rx="${s * 0.01}" fill="#C98A00" opacity="0.85"/>
-
-  <!-- orelha -->
-  <path d="M ${earCx - earW / 2} ${earTopY + earH}
-           Q ${earCx - earW * 0.1} ${earTopY - earH * 0.2} ${earCx + earW / 2} ${earTopY + earH}
-           Z"
-        fill="#FF6FA0"/>
-
-  <!-- perninhas -->
-  <rect x="${cx - legGap - legW / 2}" y="${legY}" width="${legW}" height="${legH}" rx="${legW / 2}" fill="#F0578F"/>
-  <rect x="${cx + legGap - legW / 2}" y="${legY}" width="${legW}" height="${legH}" rx="${legW / 2}" fill="#F0578F"/>
-
-  <!-- corpo -->
-  <ellipse cx="${cx}" cy="${bodyCy}" rx="${bodyRx}" ry="${bodyRy}" fill="url(#bodyGrad)"/>
-
-  <!-- fenda de moeda -->
-  <rect x="${slotX}" y="${slotY}" width="${slotW}" height="${slotH}" rx="${slotR}" fill="#B83A6B"/>
-
-  <!-- focinho -->
-  <ellipse cx="${snoutCx}" cy="${snoutCy}" rx="${snoutRx}" ry="${snoutRy}" fill="#FF8FB3"/>
-  <circle cx="${snoutCx - snoutRx * 0.4}" cy="${snoutCy}" r="${nostrilR}" fill="#B83A6B"/>
-  <circle cx="${snoutCx + snoutRx * 0.4}" cy="${snoutCy}" r="${nostrilR}" fill="#B83A6B"/>
-
-  <!-- olho -->
-  <circle cx="${eyeCx}" cy="${eyeCy}" r="${eyeR}" fill="#2A1722"/>
-  <circle cx="${eyeCx + eyeR * 0.35}" cy="${eyeCy - eyeR * 0.35}" r="${eyeR * 0.35}" fill="#FFFFFF"/>
+  <g transform="translate(${tx} ${ty}) scale(${ps})">
+    ${PIGGY_120}
+  </g>
 </svg>`.trim();
 }
 
@@ -142,7 +97,7 @@ async function main() {
   // Apple touch icon (180), fundo arredondado.
   await renderPng(piggySvg(180, { rounded: true, scale: 1 }), 180, resolve(PUBLIC_DIR, "apple-touch-icon.png"));
 
-  // Maskable: fundo quadrado cheio + ~20% de padding de segurança no porquinho.
+  // Maskable: fundo quadrado cheio + ~22% de padding de segurança no porquinho.
   await renderPng(piggySvg(512, { rounded: false, scale: 0.78 }), 512, resolve(PUBLIC_DIR, "icon-maskable-512.png"));
 
   console.log("Ícones gerados em", PUBLIC_DIR);
